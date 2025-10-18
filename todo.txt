@@ -1,0 +1,11 @@
+-> Draw DB diagram
+	-> Create all models
+
+-> In next, get all shadcn components
+
+
+
+-> users
+-> user roles
+-> components
+
