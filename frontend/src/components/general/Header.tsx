@@ -1,15 +1,15 @@
 import { BookOpen, ChevronDown, LogOutIcon } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
+import { useUser } from "@/context/UserContext";
 
 const Header = () => {
     const router = useRouter();
+    const { user, logout } = useUser();
 
     const handleLogout = () => {
-        // Clear authentication flag
-        localStorage.removeItem("isAuthenticated");
+        logout();
         router.push("/login");
     };
 
@@ -30,7 +30,7 @@ const Header = () => {
                                 <AvatarFallback>CN</AvatarFallback>
                             </Avatar>
                             <span className="flex items-center gap-1">
-                                <p className="text-sm font-medium text-gray-900">John Doe</p>
+                                <p className="text-sm font-medium text-gray-900">{user?.name} {user?.surname}</p>
                                 <ChevronDown size={14} />
                             </span>
                         </DropdownMenuTrigger>

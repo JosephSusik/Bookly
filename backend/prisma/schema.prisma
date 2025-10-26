@@ -12,11 +12,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Book {
+model User {
   id        String   @id @default(uuid())
-  title     String
-  author    String
-  isbn      String   @unique
-  addedAt   DateTime @default(now())
+  email     String   @unique
+  name      String
+  surname   String
+  password  String // hashed later
+  role      UserRole @default(User)
+  createdAt DateTime @default(now())
+
+  @@map("users")
+}
+
+enum UserRole {
+  Admin
+  User
 }

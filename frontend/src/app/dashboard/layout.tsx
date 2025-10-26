@@ -2,33 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const { user } = useUser(); // Get current user from context
 
   useEffect(() => {
-    // TODO: Replace with actual authentication check
-    // For now, check if user is coming from login (simplified)
-    const checkAuth = () => {
-      // In a real app, you would check for a valid JWT token or session
-      // For now, we'll just check if there's a flag in localStorage
-      const authFlag = localStorage.getItem("isAuthenticated");
-      if (authFlag === "true") {
-        setIsAuthenticated(true);
-      } else {
-        router.push("/login");
+    if (!user) {
+      // If user is not loaded yet, wait a bit
+      const token = localStorage.getItem("token");
+      if (!token) {
+        router.push("/login"); // No token → redirect
       }
-      setIsLoading(false);
-    };
+    }
 
-    checkAuth();
-  }, [router]);
+    setIsLoading(false);
+  }, [user, router]);
 
   if (isLoading) {
     return (
@@ -41,7 +37,7 @@ export default function DashboardLayout({
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return null; // Will redirect to login
   }
 

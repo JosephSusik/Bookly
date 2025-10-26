@@ -1,17 +1,28 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import bookRoutes from './routes/books';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import userRoutes from "./routes/users";
 
-dotenv.config();
+// Load environment variables from .env.local or .env
+dotenv.config({ path: ".env.local" });
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/books', bookRoutes);
+app.use("/api/users", userRoutes);
+
+app.get("/", (req, res) => {
+  res.send("📚 Bookly API is running!");
+});
+
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error("❌ Error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
