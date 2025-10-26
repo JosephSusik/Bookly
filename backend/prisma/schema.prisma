@@ -13,13 +13,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  surname   String
-  password  String // hashed later
-  role      UserRole @default(User)
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  surname      String
+  password     String // hashed later
+  role         UserRole @default(User)
+  createdAt    DateTime @default(now())
+  myBooks      Book[]   @relation("UserLibrary")
+  createdBooks Book[]   @relation("CreatedBooks")
 
   @@map("users")
 }
@@ -27,4 +29,52 @@ model User {
 enum UserRole {
   Admin
   User
+}
+
+model Book {
+  ISBN           String      @id @unique
+  title          String
+  subtitle       String?
+  publisher      String?
+  published_date DateTime?
+  page_count     Int?
+  language       String?
+  genres         BookGenre[]
+  description    String? // user provided description
+  cover_url      String?
+
+  // Timestamps
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  // Relations
+  created_by_id String
+  created_by    User     @relation("CreatedBooks", fields: [created_by_id], references: [id])
+  addedByUsers  User[]   @relation("UserLibrary")
+  authors       Author[] @relation("BookAuthors")
+}
+
+model Author {
+  id    String @id @default(uuid())
+  name  String @unique
+  books Book[] @relation("BookAuthors")
+}
+
+enum BookGenre {
+  Fiction
+  NonFiction
+  Fantasy
+  SciFi
+  Mystery
+  Romance
+  Thriller
+  Biography
+  History
+  SelfHelp
+  Children
+  Adventure
+  Horror
+  Classics
+  Poetry
+  GraphicNovel
 }

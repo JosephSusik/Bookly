@@ -14,57 +14,16 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type Payment = {
-    id: string
-    amount: number
-    status: "pending" | "processing" | "success" | "failed"
-    email: string
-}
-
-export const columns: ColumnDef<Payment>[] = [
-    {
-        accessorKey: "status",
-        header: "Status",
-    },
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
-        accessorKey: "amount",
-        header: "Amount",
-    },
-]
-
-
-export function getData(): Payment[] {
-    const statuses: Array<"pending" | "processing" | "success" | "failed"> = [
-        "pending",
-        "processing",
-        "success",
-        "failed",
-    ]
-
-    const data: Payment[] = Array.from({ length: 100 }, (_, i) => ({
-        id: `payment-${i + 1}`,
-        amount: Math.floor(Math.random() * 1000) + 1, // random amount 1–1000
-        status: statuses[i % statuses.length], // rotate valid statuses
-        email: `user${i + 1}@example.com`,
-    }))
-
-    return data
-}
-
 interface DataGridProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    isLoading?: boolean
 }
 
 export function DataGrid<TData, TValue>({
     columns,
     data,
+    isLoading = false,
 }: DataGridProps<TData, TValue>) {
     const table = useReactTable({
         data,

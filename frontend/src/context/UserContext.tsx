@@ -8,6 +8,7 @@ interface User {
     name: string;
     surname: string;
     role: string;
+    createdAt: string;
 }
 
 interface UserContextType {
@@ -30,7 +31,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         if (savedToken) {
             setToken(savedToken);
             // Optionally fetch user info from /users/me
-            fetch("/api/users/me", {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
                 headers: { Authorization: `Bearer ${savedToken}` },
             })
                 .then((res) => res.json())

@@ -50,19 +50,38 @@ router.post("/login", async (req, res) => {
   res.json({ message: "Login successful", token, user });
 });
 
-// Get current user (protected)
-router.get("/me", async (req, res) => {
-  const auth = req.headers.authorization;
-  if (!auth) return res.status(401).json({ error: "Missing token" });
 
+// GET /users/me
+router.get("/me", async (req, res) => {
   try {
-    const token = auth.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token provided" });
+
+    const token = authHeader.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Invalid token" });
+
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: string };
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        surname: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
     res.json(user);
   } catch (err) {
+    console.error(err);
     res.status(401).json({ error: "Invalid token" });
   }
 });
+
 
 export default router;

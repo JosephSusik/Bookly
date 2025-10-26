@@ -14,12 +14,12 @@ const Header = () => {
     };
 
     return (
-        <header className="bg-white shadow-sm border-b h-[56px] box-border flex items-center">
+        <header className="bg-white shadow-sm shadow-amber-500 border-b h-[56px] box-border flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex items-center">
                         <BookOpen className="h-8 w-8 text-primary" />
-                        <h1 className="ml-2 text-xl font-semibold text-gray-900">Bookly</h1>
+                        <h1 className="ml-2 text-xl font-semibold text-gray-900 cursor-pointer" onClick={() => router.push("/dashboard")}>Bookly</h1>
                     </div>
 
 
@@ -35,9 +35,13 @@ const Header = () => {
                             </span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator /> */}
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            {user?.role === "Admin" && (
+                                <>
+                                    <DropdownMenuItem onClick={() => router.push("/admin")} className="cursor-pointer">Admin</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                </>
+                            )}
+                            <DropdownMenuItem onClick={() => router.push("/profile")} className="cursor-pointer">Profile</DropdownMenuItem>
                             <DropdownMenuItem>Billing</DropdownMenuItem>
                             <DropdownMenuItem>Team</DropdownMenuItem>
                             <DropdownMenuSeparator />
