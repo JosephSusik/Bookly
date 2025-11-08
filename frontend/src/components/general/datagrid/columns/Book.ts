@@ -5,6 +5,7 @@ export type Book = {
     title: string;
     subtitle: string | null;
     publisher: string | null;
+    authors: string[];
     published_date: Date | null;
     page_count: number | null;
     language: string | null;
@@ -26,10 +27,6 @@ export type Book = {
       id: string;
       name: string;
       surname: string;
-    }[];
-    authors: {
-      id: number;
-      name: string;
     }[];
   };
   
@@ -61,5 +58,9 @@ export type Book = {
     {
         accessorKey: "language",
         header: "Language",
+    },
+    {
+        accessorKey: "authors",
+        header: "Authors",
     },
 ]

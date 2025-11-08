@@ -2,13 +2,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, TrendingUp, Users, Star } from "lucide-react";
-import DataGrid from "@/components/general/datagrid/DataGrid";
 import AuthLayout from "@/components/general/AuthLayout";
-import { bookColumns } from "@/components/general/datagrid/columns/Book";
-import { useBooks } from "@/hooks/useBooks";
+import { BooksDataGrid } from "@/components/general/datagrid/tables/BooksDataGrid";
 
 export default function DashboardPage() {
-    const { data: books, isLoading } = useBooks();
 
     return (
         <AuthLayout>
@@ -73,7 +70,7 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
-            <DataGrid columns={bookColumns} data={books ?? []} isLoading={isLoading} />
+            <BooksDataGrid />
         </AuthLayout >
     );
 }

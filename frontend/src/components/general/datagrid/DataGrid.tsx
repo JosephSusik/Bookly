@@ -13,6 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { AddBookModal } from "../AddBookModal"
 
 interface DataGridProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -32,8 +33,8 @@ export function DataGrid<TData, TValue>({
     })
 
     return (
-        <div className="flex-1 overflow-y-auto border rounded-md bg-white">
-            <Table className="h-full relative" >
+        <div className="flex-1 overflow-y-auto border rounded-md">
+            <Table className="h-full relative">
                 <TableHeader className="sticky top-0 bg-white z-10">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
@@ -75,7 +76,7 @@ export function DataGrid<TData, TValue>({
                     )}
                 </TableBody>
             </Table>
-        </div>
+        </div >
     )
 }
 export default DataGrid;
