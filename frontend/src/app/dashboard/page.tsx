@@ -12,7 +12,7 @@ export default function DashboardPage() {
             {/* Welcome Section */}
             <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900">Welcome back!</h2>
-                <p className="text-gray-600">Here's what's happening with your book collection.</p>
+                {/* <p className="text-gray-600">Here's what's happening with your book collection.</p> */}
             </div>
 
             {/* Stats Grid */}

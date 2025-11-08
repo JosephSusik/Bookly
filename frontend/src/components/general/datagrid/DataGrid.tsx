@@ -14,7 +14,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { AddBookModal } from "../AddBookModal"
 
 interface DataGridProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -28,7 +27,6 @@ export function DataGrid<TData, TValue>({
     isLoading = false,
     onRowClick,
 }: DataGridProps<TData, TValue> & { onRowClick?: (row: TData) => void }) {
-    const router = useRouter()
     const table = useReactTable({
         data,
         columns,
@@ -38,8 +36,6 @@ export function DataGrid<TData, TValue>({
     const handleRowClick = (row: TData) => {
         if (onRowClick) {
             onRowClick(row)
-        } else if ('id' in row && typeof row.id === 'string') {
-            router.push(`/book/${row.id}`)
         }
     }
 
@@ -71,7 +67,7 @@ export function DataGrid<TData, TValue>({
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
                                 onClick={() => handleRowClick(row.original)}
-                                className={onRowClick || ('id' in row.original) ? "cursor-pointer hover:bg-muted/50" : ""}
+                                className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>

@@ -19,6 +19,7 @@ interface AddBookFormProps {
 
 export const AddBookForm = ({ onSubmit, prefilledData }: AddBookFormProps) => {
     const { form } = useAddBookForm()
+    const [calendarOpen, setCalendarOpen] = useState(false)
 
     // Populate form when prefilledData changes
     useEffect(() => {
@@ -178,12 +179,11 @@ export const AddBookForm = ({ onSubmit, prefilledData }: AddBookFormProps) => {
                     control={form.control}
                     name="published_date"
                     render={({ field }) => {
-                        const [open, setOpen] = useState(false)
                         const isDisabled = isFieldDisabled("published_date")
                         return (
                             <FormItem className="flex flex-col">
                                 <FormLabel>Published Date</FormLabel>
-                                <Popover open={open} onOpenChange={setOpen}>
+                                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                                     <PopoverTrigger asChild>
                                         <FormControl>
                                             <Button
@@ -214,7 +214,7 @@ export const AddBookForm = ({ onSubmit, prefilledData }: AddBookFormProps) => {
                                                 selected={field.value}
                                                 onSelect={(date) => {
                                                     field.onChange(date)
-                                                    setOpen(false)
+                                                    setCalendarOpen(false)
                                                 }}
                                             />
                                         </PopoverContent>
