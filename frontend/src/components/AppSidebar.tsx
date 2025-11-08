@@ -7,6 +7,7 @@ import {
     Library,
     Compass,
     LogOut,
+    User,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -42,7 +43,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useSidebar } from "@/components/ui/sidebar"
 import { useUser } from "@/context/UserContext"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "./ui/separator"
 
 const menuItems = [
     {
@@ -116,6 +117,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <Separator orientation="horizontal" />
             <SidebarFooter>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -126,13 +128,8 @@ export function AppSidebar() {
                             tooltip={user ? `${user.name} ${user.surname}` : "Profile"}
                         >
                             <Link href="/profile">
-                                <Avatar className="size-8">
-                                    <AvatarImage src="https://github.com/shadcn.png" />
-                                    <AvatarFallback>
-                                        {user?.name?.[0]}{user?.surname?.[0]}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                <User className="size-4 group-data-[collapsible=icon]:size-5" />
+                                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="truncate font-semibold">
                                         {user?.name} {user?.surname}
                                     </span>
