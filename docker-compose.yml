@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: bookly_db
     ports:
-      - "5433:5432"  # Avoids clashing with work's port 5432
+      - "5433:5432"  # External port 5433 maps to internal port 5432
     volumes:
       - pgdata:/var/lib/postgresql/data
 

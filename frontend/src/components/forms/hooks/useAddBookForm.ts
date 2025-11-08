@@ -23,6 +23,7 @@ export const useAddBookForm = () => {
     const form = useForm<AddBookFormValues>({
         resolver: zodResolver(addBookFormSchema),
         defaultValues: {
+            ISBN: "",
             title: "",
             subtitle: "",
             authors: [],

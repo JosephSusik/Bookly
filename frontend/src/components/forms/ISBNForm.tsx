@@ -7,9 +7,10 @@ import { Button } from "../ui/button"
 
 interface ISBNFormProps {
     onSubmit: (data: ISBNFormValues) => void
+    isLoading?: boolean
 }
 
-export const ISBNForm = ({ onSubmit }: ISBNFormProps) => {
+export const ISBNForm = ({ onSubmit, isLoading = false }: ISBNFormProps) => {
     const { form } = useISBNForm()
 
     return (
@@ -22,13 +23,25 @@ export const ISBNForm = ({ onSubmit }: ISBNFormProps) => {
                         <FormItem>
                             <FormLabel>ISBN</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Enter ISBN" {...field} />
+                                <Input
+                                    type="text"
+                                    placeholder="Enter ISBN"
+                                    {...field}
+                                    disabled={isLoading}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-max self-end" onClick={form.handleSubmit(onSubmit)}>Search</Button>
+                <Button
+                    type="submit"
+                    className="w-max self-end"
+                    onClick={form.handleSubmit(onSubmit)}
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Searching..." : "Search"}
+                </Button>
             </form>
         </Form>
     )

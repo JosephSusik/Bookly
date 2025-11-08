@@ -8,15 +8,56 @@ import { Textarea } from "../ui/textarea"
 import { AddBookFormValues, useAddBookForm } from "./hooks/useAddBookForm"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { SearchByISBNResponse } from "@/lib/api"
 
 
 interface AddBookFormProps {
     onSubmit: (data: AddBookFormValues) => void
+    prefilledData?: SearchByISBNResponse | null
 }
 
-export const AddBookForm = ({ onSubmit }: AddBookFormProps) => {
+export const AddBookForm = ({ onSubmit, prefilledData }: AddBookFormProps) => {
     const { form } = useAddBookForm()
+
+    // Populate form when prefilledData changes
+    useEffect(() => {
+        if (prefilledData?.book) {
+            const book = prefilledData.book
+            form.reset({
+                ISBN: book.ISBN ?? "",
+                title: book.title ?? "",
+                subtitle: book.subtitle ?? "",
+                authors: book.authors ?? [],
+                publisher: book.publisher ?? "",
+                published_date: book.published_date
+                    ? (typeof book.published_date === "string"
+                        ? new Date(book.published_date)
+                        : book.published_date)
+                    : undefined,
+                page_count: book.page_count ?? undefined,
+                language: book.language ?? "",
+                description: book.description ?? "",
+            })
+        } else if (prefilledData === null) {
+            // Reset to default values when prefilledData is explicitly null
+            form.reset({
+                ISBN: "",
+                title: "",
+                subtitle: "",
+                authors: [],
+                publisher: "",
+                published_date: undefined,
+                page_count: undefined,
+                language: "",
+                description: "",
+            })
+        }
+    }, [prefilledData, form])
+
+    const isFieldDisabled = (fieldName: string) => {
+        return prefilledData?.disabledFields?.includes(fieldName) || false
+    }
 
     return (
         <Form {...form}>
@@ -24,69 +65,121 @@ export const AddBookForm = ({ onSubmit }: AddBookFormProps) => {
                 <FormField
                     control={form.control}
                     name="ISBN"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>ISBN</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book ISBN" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("ISBN")
+                        return (
+                            <FormItem>
+                                <FormLabel>ISBN</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book ISBN"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="title"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Title</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book title" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("title")
+                        return (
+                            <FormItem>
+                                <FormLabel>Title</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book title"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="subtitle"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Subtitle</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book subtitle" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("subtitle")
+                        return (
+                            <FormItem>
+                                <FormLabel>Subtitle</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book subtitle"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="authors"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Authors</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book authors" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("authors")
+                        return (
+                            <FormItem>
+                                <FormLabel>Authors</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book authors (comma-separated)"
+                                        value={Array.isArray(field.value) ? field.value.join(", ") : field.value || ""}
+                                        onChange={(e) => {
+                                            const authorsArray = e.target.value
+                                                .split(",")
+                                                .map(a => a.trim())
+                                                .filter(a => a.length > 0)
+                                            field.onChange(authorsArray)
+                                        }}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="publisher"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Publisher</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book publisher" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("publisher")
+                        return (
+                            <FormItem>
+                                <FormLabel>Publisher</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book publisher"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="published_date"
                     render={({ field }) => {
                         const [open, setOpen] = useState(false)
+                        const isDisabled = isFieldDisabled("published_date")
                         return (
                             <FormItem className="flex flex-col">
                                 <FormLabel>Published Date</FormLabel>
@@ -99,6 +192,7 @@ export const AddBookForm = ({ onSubmit }: AddBookFormProps) => {
                                                     "pl-3 text-left font-normal",
                                                     !field.value && "text-muted-foreground"
                                                 )}
+                                                disabled={isDisabled}
                                             >
                                                 {field.value ? (
                                                     format(field.value, "PPP")
@@ -109,20 +203,22 @@ export const AddBookForm = ({ onSubmit }: AddBookFormProps) => {
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
-                                    <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
-                                        sideOffset={4}
-                                    >
-                                        <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            onSelect={(date) => {
-                                                field.onChange(date)
-                                                setOpen(false)
-                                            }}
-                                        />
-                                    </PopoverContent>
+                                    {!isDisabled && (
+                                        <PopoverContent
+                                            className="w-auto p-0"
+                                            align="start"
+                                            sideOffset={4}
+                                        >
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={(date) => {
+                                                    field.onChange(date)
+                                                    setOpen(false)
+                                                }}
+                                            />
+                                        </PopoverContent>
+                                    )}
                                 </Popover>
                             </FormItem>
                         )
@@ -131,38 +227,67 @@ export const AddBookForm = ({ onSubmit }: AddBookFormProps) => {
                 <FormField
                     control={form.control}
                     name="page_count"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Page Count</FormLabel>
-                            <FormControl>
-                                <Input type="number" placeholder="Book page count" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("page_count")
+                        return (
+                            <FormItem>
+                                <FormLabel>Page Count</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        placeholder="Book page count"
+                                        value={field.value ?? ""}
+                                        onChange={(e) => {
+                                            const value = e.target.value
+                                            field.onChange(value ? parseInt(value, 10) : undefined)
+                                        }}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="language"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Language</FormLabel>
-                            <FormControl>
-                                <Input type="text" placeholder="Book language" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("language")
+                        return (
+                            <FormItem>
+                                <FormLabel>Language</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="text"
+                                        placeholder="Book language"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <FormField
                     control={form.control}
                     name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Book description" {...field} />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                    render={({ field }) => {
+                        const disabled = isFieldDisabled("description")
+                        return (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="Book description"
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        disabled={disabled}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )
+                    }}
                 />
                 <Button type="submit" className="w-max self-end" onClick={form.handleSubmit(onSubmit)}>Add Book</Button>
             </form>

@@ -1,6 +1,8 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 
 export type Book = {
+    id: string;
     ISBN: string;
     title: string;
     subtitle: string | null;
@@ -50,6 +52,15 @@ export type Book = {
     {
         accessorKey: "published_date",
         header: "Published Date",
+        cell: ({ row }) => {
+            const date = row.getValue("published_date") as Date | null;
+            if (!date) return null;
+            try {
+                return format(new Date(date), "dd.MM.yyyy");
+            } catch {
+                return null;
+            }
+        },
     },
     {
         accessorKey: "page_count",
@@ -62,5 +73,9 @@ export type Book = {
     {
         accessorKey: "authors",
         header: "Authors",
+        cell: ({ row }) => {
+            const authors = row.getValue("authors") as string[];
+            return authors?.join(", ") || "";
+        },
     },
 ]

@@ -2,6 +2,7 @@
 import { Prisma } from "@prisma/client";
 
 export const bookSelect: Prisma.BookSelect = {
+  id: true,
   ISBN: true,
   title: true,
   subtitle: true,
@@ -14,6 +15,7 @@ export const bookSelect: Prisma.BookSelect = {
   created_at: true,
   updated_at: true,
   genres: true,
+  authors: true, // now a string array
   // Relations
   created_by: {
     select: {
@@ -30,11 +32,4 @@ export const bookSelect: Prisma.BookSelect = {
       surname: true,
     },
   },
-  authors: {
-    select: {
-      id: true,
-      name: true,
-    },
-  },
-    
 };

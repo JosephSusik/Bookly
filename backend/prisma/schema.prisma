@@ -32,7 +32,8 @@ enum UserRole {
 }
 
 model Book {
-  ISBN           String      @id @unique
+  id             String      @id @default(uuid())
+  ISBN           String?     @unique
   title          String
   subtitle       String?
   publisher      String?
@@ -42,6 +43,7 @@ model Book {
   genres         BookGenre[]
   description    String? // user provided description
   cover_url      String?
+  authors        String[] // array of author names as strings
 
   // Timestamps
   created_at DateTime  @default(now())
@@ -49,15 +51,8 @@ model Book {
 
   // Relations
   created_by_id String
-  created_by    User     @relation("CreatedBooks", fields: [created_by_id], references: [id])
-  addedByUsers  User[]   @relation("UserLibrary")
-  authors       Author[] @relation("BookAuthors")
-}
-
-model Author {
-  id    String @id @default(uuid())
-  name  String @unique
-  books Book[] @relation("BookAuthors")
+  created_by    User   @relation("CreatedBooks", fields: [created_by_id], references: [id])
+  addedByUsers  User[] @relation("UserLibrary")
 }
 
 enum BookGenre {

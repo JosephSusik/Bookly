@@ -4,6 +4,7 @@ import {
     getCoreRowModel,
     useReactTable,
 } from "@tanstack/react-table"
+import { useRouter } from "next/navigation"
 
 import {
     Table,
@@ -25,12 +26,22 @@ export function DataGrid<TData, TValue>({
     columns,
     data,
     isLoading = false,
-}: DataGridProps<TData, TValue>) {
+    onRowClick,
+}: DataGridProps<TData, TValue> & { onRowClick?: (row: TData) => void }) {
+    const router = useRouter()
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
+
+    const handleRowClick = (row: TData) => {
+        if (onRowClick) {
+            onRowClick(row)
+        } else if ('id' in row && typeof row.id === 'string') {
+            router.push(`/book/${row.id}`)
+        }
+    }
 
     return (
         <div className="flex-1 overflow-y-auto border rounded-md">
@@ -59,6 +70,8 @@ export function DataGrid<TData, TValue>({
                             <TableRow
                                 key={row.id}
                                 data-state={row.getIsSelected() && "selected"}
+                                onClick={() => handleRowClick(row.original)}
+                                className={onRowClick || ('id' in row.original) ? "cursor-pointer hover:bg-muted/50" : ""}
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>
