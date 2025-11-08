@@ -75,12 +75,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     />
                     <Breadcrumb>
                         <BreadcrumbList>
-                            <BreadcrumbItem className="hidden md:block">
-                                <BreadcrumbLink href="/dashboard">
-                                    Bookly
-                                </BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator className="hidden md:block" />
                             <BreadcrumbItem>
                                 <BreadcrumbPage>{getPageTitle()}</BreadcrumbPage>
                             </BreadcrumbItem>

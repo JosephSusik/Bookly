@@ -6,9 +6,10 @@ import {
     LayoutDashboard,
     Library,
     Compass,
+    LogOut,
 } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import {
     Sidebar,
@@ -19,9 +20,27 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
+    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useSidebar } from "@/components/ui/sidebar"
 import { useUser } from "@/context/UserContext"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
@@ -45,7 +64,15 @@ const menuItems = [
 
 export function AppSidebar() {
     const pathname = usePathname()
-    const { user } = useUser()
+    const router = useRouter()
+    const { user, logout } = useUser()
+    const { state, isMobile } = useSidebar()
+    const [showLogoutDialog, setShowLogoutDialog] = React.useState(false)
+
+    const handleLogout = () => {
+        logout()
+        router.push("/login")
+    }
 
     return (
         <Sidebar variant="inset" collapsible="icon">
@@ -54,10 +81,10 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild tooltip="Bookly">
                             <Link href="/dashboard">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground group-data-[collapsible=icon]:mx-auto">
                                     <BookOpen className="size-4" />
                                 </div>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                                     <span className="truncate font-semibold">Bookly</span>
                                     <span className="truncate text-xs">Book Collection</span>
                                 </div>
@@ -79,8 +106,8 @@ export function AppSidebar() {
                                         tooltip={item.title}
                                     >
                                         <Link href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
+                                            <item.icon className="size-4 group-data-[collapsible=icon]:size-5" />
+                                            <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -113,6 +140,47 @@ export function AppSidebar() {
                                 </div>
                             </Link>
                         </SidebarMenuButton>
+                        <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <AlertDialogTrigger asChild>
+                                        <SidebarMenuAction
+                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 peer-hover/menu-button:text-destructive [&>svg]:m-0"
+                                            onClick={(e) => {
+                                                e.preventDefault()
+                                                setShowLogoutDialog(true)
+                                            }}
+                                        >
+                                            <LogOut className="size-4" />
+                                        </SidebarMenuAction>
+                                    </AlertDialogTrigger>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                    side="right"
+                                    align="center"
+                                    hidden={state !== "collapsed" || isMobile}
+                                >
+                                    Logout
+                                </TooltipContent>
+                            </Tooltip>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        You will be logged out of your account. You can sign in again at any time.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleLogout}
+                                        className="bg-destructive text-white hover:bg-destructive/90"
+                                    >
+                                        Logout
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
