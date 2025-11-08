@@ -1,9 +1,23 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/context/UserContext";
-import Header from "./Header";
+import {
+    SidebarInset,
+    SidebarProvider,
+    SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { AppSidebar } from "../AppSidebar";
 
 interface DashboardLayoutProps {
     children: ReactNode;
@@ -13,6 +27,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const { user } = useUser();
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
+    const pathname = usePathname();
+
+    const getPageTitle = () => {
+        const titles: Record<string, string> = {
+            "/dashboard": "Dashboard",
+            "/my-books": "My Books",
+            "/explore": "Explore",
+            "/profile": "Profile",
+        };
+        return titles[pathname] || "Dashboard";
+    };
 
     useEffect(() => {
         // Redirect to login if no user or token
@@ -39,11 +64,33 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (!user) return null; // Already redirected
 
     return (
-        <div className="min-h-screen max-h-screen bg-gray-50 flex flex-col">
-            <Header />
-            <main className="h-[calc(100vh-56px)] max-w-7xl mx-auto w-full py-6 sm:px-6 lg:px-8 flex flex-col">
-                {children}
-            </main>
-        </div>
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator
+                        orientation="vertical"
+                        className="mr-2 data-[orientation=vertical]:h-4"
+                    />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem className="hidden md:block">
+                                <BreadcrumbLink href="/dashboard">
+                                    Bookly
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>{getPageTitle()}</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </header>
+                <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+                    {children}
+                </div>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }
