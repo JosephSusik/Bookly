@@ -13,7 +13,7 @@ export const MyBooksDataGrid = () => {
                 <h2 className="text-2xl font-bold text-gray-900">My Books</h2>
                 <AddBookModal />
             </div>
-            <DataGrid columns={bookColumns} data={books ?? []} isLoading={isLoading} onRowClick={(row) => router.push(`/book/${row.id}`)} />
+            <DataGrid columns={bookColumns} data={books ?? []} isLoading={isLoading} onRowClick={(row) => router.push(`/book/${row.id}?from=my-books`)} />
         </div>
     )
 }

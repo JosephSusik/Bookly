@@ -5,8 +5,7 @@ import AuthLayout from "@/components/general/AuthLayout";
 import { fetchBookById } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, Calendar, Globe, Hash, Users, FileText, Building2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Calendar, Globe, Hash, Users, FileText, Building2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -25,10 +24,6 @@ export default function BookDetailPage() {
         return (
             <AuthLayout>
                 <div className="space-y-6">
-                    <Button variant="ghost" onClick={() => router.back()}>
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Button>
                     <Card>
                         <CardHeader>
                             <Skeleton className="h-8 w-64" />
@@ -51,10 +46,6 @@ export default function BookDetailPage() {
         return (
             <AuthLayout>
                 <div className="space-y-6">
-                    <Button variant="ghost" onClick={() => router.back()}>
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Button>
                     <Card>
                         <CardContent className="pt-6">
                             <p className="text-muted-foreground">
@@ -70,11 +61,6 @@ export default function BookDetailPage() {
     return (
         <AuthLayout>
             <div className="space-y-6">
-                <Button variant="ghost" onClick={() => router.back()}>
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back
-                </Button>
-
                 <Card>
                     <CardHeader>
                         <div className="flex gap-6">
@@ -97,8 +83,8 @@ export default function BookDetailPage() {
                                     {book.genres && book.genres.length > 0 && (
                                         <>
                                             {book.genres.map((genre) => (
-                                                <Badge key={genre.id} variant="secondary">
-                                                    {genre.name}
+                                                <Badge key={genre} variant="secondary">
+                                                    {genre}
                                                 </Badge>
                                             ))}
                                         </>

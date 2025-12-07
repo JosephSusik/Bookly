@@ -15,10 +15,7 @@ export type Book = {
     cover_url: string | null;
     created_at: Date;
     updated_at: Date | null;
-    genres: {
-      id: number;
-      name: string;
-    }[];
+    genres: string[];
     created_by: {
       id: string;
       name: string;

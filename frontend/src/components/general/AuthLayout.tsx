@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import {
     SidebarInset,
@@ -14,7 +14,10 @@ import {
     BreadcrumbItem,
     BreadcrumbList,
     BreadcrumbPage,
+    BreadcrumbLink,
+    BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import Link from "next/link";
 import { AppSidebar } from "../AppSidebar";
 
 interface DashboardLayoutProps {
@@ -26,6 +29,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const [isLoading, setIsLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const getPageTitle = () => {
         const titles: Record<string, string> = {
@@ -33,8 +37,60 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             "/my-books": "My Books",
             "/explore": "Explore",
             "/profile": "Profile",
+            "/admin/all-books": "All Books",
+            "/admin/all-users": "All Users",
         };
         return titles[pathname] || "Dashboard";
+    };
+
+    const isBookDetailPage = () => {
+        return pathname?.startsWith("/book/");
+    };
+
+    const getBookDetailBreadcrumb = () => {
+        // First, check query parameter
+        const fromParam = searchParams?.get("from");
+        if (fromParam) {
+            const fromMap: Record<string, { title: string; href: string }> = {
+                "my-books": { title: "My Books", href: "/my-books" },
+                "dashboard": { title: "Dashboard", href: "/dashboard" },
+                "explore": { title: "Explore", href: "/explore" },
+                "all-books": { title: "All Books", href: "/admin/all-books" },
+            };
+            const from = fromMap[fromParam];
+            if (from) {
+                return from;
+            }
+        }
+
+        // Fallback: check referrer
+        if (typeof window !== "undefined" && document.referrer) {
+            try {
+                const referrer = new URL(document.referrer);
+                // Only use referrer if it's from the same origin
+                if (referrer.origin === window.location.origin) {
+                    const referrerPath = referrer.pathname;
+
+                    if (referrerPath.includes("/my-books")) {
+                        return { title: "My Books", href: "/my-books" };
+                    }
+                    if (referrerPath.includes("/explore")) {
+                        return { title: "Explore", href: "/explore" };
+                    }
+                    if (referrerPath.includes("/admin/all-books")) {
+                        return { title: "All Books", href: "/admin/all-books" };
+                    }
+                    if (referrerPath.includes("/dashboard")) {
+                        return { title: "Dashboard", href: "/dashboard" };
+                    }
+                }
+            } catch (e) {
+                // Invalid referrer URL, ignore
+            }
+        }
+
+        // Default fallback
+        return { title: "Dashboard", href: "/dashboard" };
     };
 
     useEffect(() => {
@@ -73,9 +129,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                     />
                     <Breadcrumb>
                         <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>{getPageTitle()}</BreadcrumbPage>
-                            </BreadcrumbItem>
+                            {isBookDetailPage() ? (() => {
+                                const parent = getBookDetailBreadcrumb();
+                                return (
+                                    <>
+                                        <BreadcrumbItem>
+                                            <BreadcrumbLink asChild>
+                                                <Link href={parent.href}>{parent.title}</Link>
+                                            </BreadcrumbLink>
+                                        </BreadcrumbItem>
+                                        <BreadcrumbSeparator />
+                                        <BreadcrumbItem>
+                                            <BreadcrumbPage>Detail</BreadcrumbPage>
+                                        </BreadcrumbItem>
+                                    </>
+                                );
+                            })() : (
+                                <BreadcrumbItem>
+                                    <BreadcrumbPage>{getPageTitle()}</BreadcrumbPage>
+                                </BreadcrumbItem>
+                            )}
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>

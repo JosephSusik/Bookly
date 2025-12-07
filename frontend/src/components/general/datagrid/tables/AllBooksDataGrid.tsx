@@ -4,7 +4,7 @@ import { bookColumns } from "../columns/Book"
 import { useBooks } from "@/hooks/useBooks"
 import { useRouter } from "next/navigation";
 
-export const BooksDataGrid = () => {
+export const AllBooksDataGrid = () => {
     const { data: books, isLoading } = useBooks();
     const router = useRouter();
     return (
@@ -13,7 +13,7 @@ export const BooksDataGrid = () => {
                 <h2 className="text-2xl font-bold text-gray-900">All Books</h2>
                 <AddBookModal />
             </div>
-            <DataGrid columns={bookColumns} data={books ?? []} isLoading={isLoading} onRowClick={(row) => router.push(`/book/${row.id}`)} />
+            <DataGrid columns={bookColumns} data={books ?? []} isLoading={isLoading} onRowClick={(row) => router.push(`/book/${row.id}?from=all-books`)} />
         </div>
     )
 }   

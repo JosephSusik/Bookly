@@ -8,6 +8,7 @@ import {
     Compass,
     LogOut,
     User,
+    Users,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -21,15 +22,9 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -60,6 +55,19 @@ const menuItems = [
         title: "Explore",
         url: "/explore",
         icon: Compass,
+    },
+]
+
+const adminMenuItems = [
+    {
+        title: "All Books",
+        url: "/admin/all-books",
+        icon: BookOpen,
+    },
+    {
+        title: "All Users",
+        url: "/admin/all-users",
+        icon: Users,
     },
 ]
 
@@ -116,6 +124,30 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+                <Separator orientation="horizontal" hidden={state !== "collapsed" || isMobile} />
+                {user?.role === "Admin" && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Admin</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {adminMenuItems.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={pathname === item.url}
+                                            tooltip={item.title}
+                                        >
+                                            <Link href={item.url}>
+                                                <item.icon className="size-4 group-data-[collapsible=icon]:size-5" />
+                                                <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
             <Separator orientation="horizontal" />
             <SidebarFooter>
@@ -137,29 +169,18 @@ export function AppSidebar() {
                                 </div>
                             </Link>
                         </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
                         <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <AlertDialogTrigger asChild>
-                                        <SidebarMenuAction
-                                            className="text-destructive hover:text-destructive hover:bg-destructive/10 peer-hover/menu-button:text-destructive [&>svg]:m-0"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                setShowLogoutDialog(true)
-                                            }}
-                                        >
-                                            <LogOut className="size-4" />
-                                        </SidebarMenuAction>
-                                    </AlertDialogTrigger>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                    side="right"
-                                    align="center"
-                                    hidden={state !== "collapsed" || isMobile}
+                            <AlertDialogTrigger asChild>
+                                <SidebarMenuButton
+                                    tooltip="Logout"
+                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
                                 >
-                                    Logout
-                                </TooltipContent>
-                            </Tooltip>
+                                    <LogOut className="size-4 group-data-[collapsible=icon]:size-5" />
+                                    <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+                                </SidebarMenuButton>
+                            </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
                                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
