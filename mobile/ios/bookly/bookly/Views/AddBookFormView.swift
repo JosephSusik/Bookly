@@ -10,6 +10,7 @@ import SwiftUI
 struct AddBookFormView: View {
     let searchResult: SearchByISBNResponse
     let onSave: (CreateBookData) -> Void
+    let onSaveAndAddAnother: (CreateBookData) -> Void
     let onCancel: () -> Void
     
     @State private var isbn: String
@@ -23,9 +24,10 @@ struct AddBookFormView: View {
     @State private var description: String
     @State private var showDatePicker = false
     
-    init(searchResult: SearchByISBNResponse, onSave: @escaping (CreateBookData) -> Void, onCancel: @escaping () -> Void) {
+    init(searchResult: SearchByISBNResponse, onSave: @escaping (CreateBookData) -> Void, onSaveAndAddAnother: @escaping (CreateBookData) -> Void, onCancel: @escaping () -> Void) {
         self.searchResult = searchResult
         self.onSave = onSave
+        self.onSaveAndAddAnother = onSaveAndAddAnother
         self.onCancel = onCancel
         
         let book = searchResult.book
@@ -164,6 +166,17 @@ struct AddBookFormView: View {
                 }
                 .disabled(title.isEmpty)
                 
+                Button(action: handleSaveAndAddAnother) {
+                    HStack {
+                        Spacer()
+                        Image(systemName: "camera.fill")
+                        Text("Save & Add Another")
+                            .fontWeight(.semibold)
+                        Spacer()
+                    }
+                }
+                .disabled(title.isEmpty)
+                
                 Button(action: onCancel) {
                     HStack {
                         Spacer()
@@ -188,7 +201,7 @@ struct AddBookFormView: View {
         return formatter.string(from: date)
     }
     
-    private func handleSave() {
+    private func createBookData() -> CreateBookData {
         let authorsArray = authors
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
@@ -197,7 +210,7 @@ struct AddBookFormView: View {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withFullDate, .withDashSeparatorInDate]
         
-        let bookData = CreateBookData(
+        return CreateBookData(
             ISBN: isbn.isEmpty ? nil : isbn,
             title: title,
             subtitle: subtitle.isEmpty ? nil : subtitle,
@@ -209,8 +222,14 @@ struct AddBookFormView: View {
             description: description.isEmpty ? nil : description,
             coverUrl: nil
         )
-        
-        onSave(bookData)
+    }
+    
+    private func handleSave() {
+        onSave(createBookData())
+    }
+    
+    private func handleSaveAndAddAnother() {
+        onSaveAndAddAnother(createBookData())
     }
 }
 
@@ -234,6 +253,7 @@ struct AddBookFormView: View {
                 disabledFields: []
             ),
             onSave: { _ in },
+            onSaveAndAddAnother: { _ in },
             onCancel: { }
         )
     }

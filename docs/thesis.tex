@@ -1,0 +1,152 @@
+% ============================================================================ %
+%
+%           Šablona bakalářské/diplomové práce UTB ve Zlíně
+%
+% Autor:    2006/05, základ, Jozef Říha
+%           2024/05, úpravy citování, Roman Šír (r_sir@utb.cz)
+%           2014-2025, Ing. Pavel Tomášek, Ph.D. (tomasek@utb.cz)
+%
+% Verze:    2025-09-16
+%
+% Kódování: UTF-8 (kontrolní řetězec: žluťoučký kůň úpěl ďábelšké ódy)
+%
+% Sazba:    Doporučená kombinace TeXstudio a LaTeX (MikTeX), případně Overleaf.
+%           Ukázka překladu z terminálu, či z příkazové řádky pro korektní vložení referencí:
+%           `pdflatex thesis.tex && bibtex thesis && pdflatex thesis.tex && pdflatex thesis.tex`
+%
+% Tip:      Ve správně vysázeném českém textu by na konci řádku neměla zůstat 
+%           samotná jednopísmenná předložka či spojka. Na takové místo se vkládá
+%           nezalomitelná mezera pomocí symbolu ~.
+%
+% Pozor:    Vzhledem k požadovanému standardu PDF/A nesmí vložené obrázky
+%           obsahovat alfa kanál (průhlednost).
+%
+% ============================================================================ %
+
+% Definice vzhledu a nastavení se nachází přímo v následující speciální třídě
+\documentclass{template-definitions/thesistbuinzlin}
+
+% Uživatelské definice -- upravte dle potřeby
+\setthesislanguage{CZ}
+% CZ   -- práce bude v českém jazyce
+% EN   -- práce bude v anglickém jazyce
+
+\setfaculty{FAI}
+  % FAI  -- pro Fakultu aplikované informatiky
+  % FAME -- pro Fakultu managementu a ekonomiky
+  % FHS  -- pro Fakultu humanitních studií
+  % FLKR -- pro Fakultu logistiky a krizového řízení
+  % FMK  -- pro Fakutlu mutimediálních komunikací
+  % FT   -- pro Fakultu technologickou
+  % UNI  -- pro Univerzitní institut
+
+\setthesistype{DP}
+  % BP   -- bakalářská práce
+  % DP   -- diplomová práce
+
+\setthesisyear{2026}
+  % zadejte rok namísto "xxxx"
+
+\setcitationmode{numbers}
+  % authoryear -- odkazování na zdroje bude v módu (autor, rok), tzv. harvardský systém, vhodné v případě fakult FAME, FHS, FLKŘ, FMK, FT
+  % numbers    -- odkazování na zdroje bude v číselném módu [číslo], vhodné v případě fakult FAI, FT
+
+% Lze přidat vertikální odsazení nad (prvni parametr) a pod (druhý parametr) obrázky, tabulky i rovnice/soustavy rovnic
+\setmarginaroundfigures{0mm}{0mm}
+\setmarginaroundtables{0mm}{0mm}
+\setmarginaroundequations{0mm}{0mm}
+
+\setauthor{Bc. Josef Susík}
+
+\settitlecz{Digitalizace domácí knihovny}
+\settitleen{Thesis Title in English (max. 7 rows)}  % Needed only when writing in English
+
+\setabstractcz{Text abstraktu v jazyce práce.}
+
+\setabstracten{Text abstraktu ve světovém jazyce (angličtině).}
+
+\setkeywordscz{klíčové slovo, klíčové slovo}
+
+\setkeywordsen{keyword, keyword}
+
+\setuppdfa
+
+%\usecolouredlinks  % Volitelné, může být nápomocné při tvorbě a kontrole výsledného dokumentu
+
+% ============================================================================ %
+
+\begin{document}
+
+\maketitle
+
+\insertassignment{graphics/placeholder-scan.pdf}
+
+\insertdeclaration{CZ}
+  % CZ   -- doporučované, i pokud práci píše český/slovenský student v angličtině
+  % EN   -- variant only for international students
+
+\insertabstractandkeywords
+
+% ============================================================================ %
+
+\cleardoublepage
+Zde je místo pro případné poděkování, popř. motto, úryvky knih atp.
+Pokud poděkování nechcete vložit, smažte celý tento blok 
+(mezi příkazy cleardoublepage, včetně těchto příkazů).
+
+{\bigskip
+\color{red}UPOZORNĚNÍ: důležitou součástí této šablony je manuál s návodem. Důrazně proto doporučujeme přečíst si manuál k šabloně.}
+\cleardoublepage
+
+% ============================================================================ %
+
+\insertcontents  % Obsah je generován automaticky
+
+% ============================================================================ %
+
+\insertlistoffigures  % Seznam je generován automaticky
+
+\insertlistoftables  % Seznam je generován automaticky
+
+%\insertlistoflisting  % Seznam je generován automaticky, vhodné jen pokud máte v dokumentu fragmenty kódu
+
+\input{text/abbreviations.tex}  % Seznam zkratek
+
+\insertlistofappendices  % Seznam příloh je generován automaticky
+
+% ============================================================================ %
+
+\paragraphindentationstart  % Nastaví odsazování odstavců dle zvoleného jazyka
+\cleardoublepage					  % Další text (úvod) až na liché straně
+
+% Text práce
+\input{text/text-chapter-00-introduction.tex}
+
+% Pouze u vybraných fakult (např. FAME):
+%   vložení samostatné nečíslované kapitoly týkající se cílů a metod
+\iffame \input{text/text-chapter-00-objectives.tex} \fi
+
+\part{TEORETICKÁ ČÁST}
+\input{text/text-chapter-01.tex}
+\input{text/text-chapter-02.tex}
+
+\part{PRAKTICKÁ ČÁST}
+\input{text/text-chapter-03.tex}
+
+\input{text/text-chapter-99-conclusion.tex}
+
+\paragraphindentationstop
+
+% ============================================================================ %
+
+% Využívají se bibliografické údaje uložené v souboru tex/references.bib.
+% Ty se automaticky upravuji dle zvolené citační normy (ČSN ISO 690:2022).
+\insertlistofreferences
+
+\input{text/appendices.tex}  % Vložení příloh
+
+% ============================================================================ %
+
+\end{document}
+
+% ============================================================================ %

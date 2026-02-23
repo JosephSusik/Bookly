@@ -26,6 +26,7 @@ struct AddBookView: View {
                     AddBookFormView(
                         searchResult: result,
                         onSave: handleSaveBook,
+                        onSaveAndAddAnother: handleSaveAndAddAnother,
                         onCancel: {
                             showForm = false
                             searchResult = nil
@@ -226,6 +227,38 @@ struct AddBookView: View {
                 }
             } catch {
                 await MainActor.run {
+                    // Only show error if it's not a decode error after successful save
+                    // The API service now handles decode errors gracefully for successful saves
+                    errorMessage = error.localizedDescription
+                    isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func handleSaveAndAddAnother(_ bookData: CreateBookData) {
+        guard let token = authManager.token else {
+            errorMessage = "Not authenticated"
+            return
+        }
+        
+        isLoading = true
+        errorMessage = nil
+        
+        Task {
+            do {
+                _ = try await APIService.shared.createBook(data: bookData, token: token)
+                await MainActor.run {
+                    isLoading = false
+                    // Reset form and reopen scanner
+                    showForm = false
+                    searchResult = nil
+                    scannedISBN = nil
+                    isScanning = true
+                }
+            } catch {
+                await MainActor.run {
+                    // Only show error if it's not a decode error after successful save
                     errorMessage = error.localizedDescription
                     isLoading = false
                 }

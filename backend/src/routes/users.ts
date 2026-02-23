@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -10,6 +10,38 @@ const JWT_SECRET = process.env.JWT_SECRET as string
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
+
+// Helper middleware to extract user from JWT token
+interface AuthRequest extends Request {
+  userId?: string;
+  userRole?: string;
+}
+
+const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: "No token provided" });
+
+    const token = authHeader.split(" ")[1];
+    if (!token) return res.status(401).json({ error: "Invalid token" });
+
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+    req.userId = payload.userId;
+    req.userRole = payload.role;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: "Invalid token" });
+  }
+};
+
+// Middleware to check if user is admin
+const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.userRole !== "Admin") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  next();
+};
 
 // Register user
 router.post("/register", async (req, res) => {
@@ -80,6 +112,29 @@ router.get("/me", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(401).json({ error: "Invalid token" });
+  }
+});
+
+// GET /users - Get all users (admin only)
+router.get("/", authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        surname: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch users" });
   }
 });
 
