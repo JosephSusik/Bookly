@@ -26,6 +26,9 @@
 % Definice vzhledu a nastavení se nachází přímo v následující speciální třídě
 \documentclass{template-definitions/thesistbuinzlin}
 
+\usepackage[none]{hyphenat}
+\sloppy
+
 % Uživatelské definice -- upravte dle potřeby
 \setthesislanguage{CZ}
 % CZ   -- práce bude v českém jazyce
@@ -46,7 +49,7 @@
 
 \setthesisyear{2026}
   % zadejte rok namísto "xxxx"
-
+  
 \setcitationmode{numbers}
   % authoryear -- odkazování na zdroje bude v módu (autor, rok), tzv. harvardský systém, vhodné v případě fakult FAME, FHS, FLKŘ, FMK, FT
   % numbers    -- odkazování na zdroje bude v číselném módu [číslo], vhodné v případě fakult FAI, FT
@@ -61,13 +64,24 @@
 \settitlecz{Digitalizace domácí knihovny}
 \settitleen{Thesis Title in English (max. 7 rows)}  % Needed only when writing in English
 
-\setabstractcz{Text abstraktu v jazyce práce.}
+\setabstractcz{
+Tato diplomová práce je zaměřena na vývoj aplikace, která lidem pomůže spravovat jejich osobní knihovnu v digitální podobě. 
+Uživatelé si mohou přidávat knihy jednoduše naskenováním ISBN kódu nebo ručním zadáním, prohlížet si informace o knihách a sledovat, co~už přečetli nebo chtějí číst. 
+Důležitou součástí aplikace je systém doporučování knih, který uživatelům nabízí tipy na další tituly, které by je mohly zajímat, a to na základě jejich čtenářských preferencí a historie. 
+Doporučení jsou vytvářena pomocí strojového učení. 
+Aplikace je dostupná jak ve webové, tak v mobilní verzi. Webová aplikace je implementována ve~frameworku Next.js s využitím jazyka TypeScript. Mobilní aplikace je implementována v~open-source frameworku Flutter.
+}
 
-\setabstracten{Text abstraktu ve světovém jazyce (angličtině).}
+\setabstracten{
+This master's thesis focuses on the development of an apllication designed to help users manage their personal book library in digital form.
+Users can add books either by scanning the ISBN code or by entering the data manually, browse detailed information about individual books, and track which titles they have already read or plan to read.
+An important part of~the application is a book recommendation system that suggests additional titles based on~users' reading preferences and history. The recommendations are generated using machine learning algorithms.
+The application is available in both web and mobile versions. The web application is implemented using the Next.js framework with TypeScript. The mobile application is implemented using the Flutter framework.
+}
 
-\setkeywordscz{klíčové slovo, klíčové slovo}
+\setkeywordscz{digitální knihovna, správa osobní knihovny, doporučovací systém, strojové učení, webová aplikace, mobilní aplikace, Next.js, Flutter, ISBN}
 
-\setkeywordsen{keyword, keyword}
+\setkeywordsen{digital library, personal library management, recommendation system, machine learning, web application, mobile application, Next.js, Flutter, ISBN}
 
 \setuppdfa
 
@@ -132,6 +146,11 @@ Pokud poděkování nechcete vložit, smažte celý tento blok
 
 \part{PRAKTICKÁ ČÁST}
 \input{text/text-chapter-03.tex}
+\input{text/text-chapter-04.tex}
+\input{text/text-chapter-05.tex}
+\input{text/text-chapter-06.tex}
+\input{text/text-chapter-07.tex}
+\input{text/text-chapter-08.tex}
 
 \input{text/text-chapter-99-conclusion.tex}
 
