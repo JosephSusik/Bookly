@@ -27,8 +27,9 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "ts-node prisma/seed.ts",
-    "reset-db": "npx prisma migrate reset --force --skip-seed"
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:reset": "docker compose -f ../docker-compose.yml up -d && node -e \"const d=Date.now(); while(Date.now()-d<5000);\" && npx prisma migrate reset --force --skip-seed",
+    "db:reset:no-docker": "npx prisma migrate reset --force --skip-seed"
 
   },
   "keywords": [],
