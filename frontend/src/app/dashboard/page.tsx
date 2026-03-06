@@ -1,9 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, Library, User } from "lucide-react";
+import { BookOpen, FileText, Library, Sparkles, User } from "lucide-react";
 import AuthLayout from "@/components/general/AuthLayout";
 import { useMyBooks } from "@/hooks/useMyBooks";
+import { useRecommendedBooks } from "@/hooks/useRecommendedBooks";
 import { useUser } from "@/context/UserContext";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
     const { data: books, isLoading } = useMyBooks();
+    const { data: recommendedBooks, isLoading: recommendedLoading } = useRecommendedBooks(6);
     const { user } = useUser();
     const router = useRouter();
 
@@ -169,6 +171,68 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
+            {/* Recommended for You */}
+            {(recommendedLoading || (recommendedBooks && recommendedBooks.length > 0)) && (
+                <Card className="mb-8">
+                    <CardHeader>
+                        <div className="flex justify-between items-center">
+                            <CardTitle className="flex items-center gap-2">
+                                <Sparkles className="h-5 w-5 text-primary" />
+                                Recommended for You
+                            </CardTitle>
+                            <button
+                                onClick={() => router.push("/admin/all-books")}
+                                className="text-sm text-primary hover:underline"
+                            >
+                                Browse all
+                            </button>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                            Based on your library genres and authors
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        {recommendedLoading ? (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                {[...Array(6)].map((_, i) => (
+                                    <Skeleton key={i} className="aspect-[2/3] rounded-lg" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                {(recommendedBooks ?? []).map((book) => (
+                                    <div
+                                        key={book.id}
+                                        onClick={() => router.push(`/book/${book.id}?from=dashboard`)}
+                                        className="cursor-pointer group"
+                                    >
+                                        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-muted mb-2 group-hover:opacity-90 transition-opacity">
+                                            {book.cover_url ? (
+                                                <img
+                                                    src={book.cover_url}
+                                                    alt={book.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <BookOpen className="h-12 w-12 text-muted-foreground" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <p className="text-sm font-medium truncate">{book.title}</p>
+                                        {book.authors && book.authors.length > 0 && (
+                                            <p className="text-xs text-muted-foreground truncate">
+                                                {book.authors[0]}
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Recent Books */}
                 <Card className="lg:col-span-2">
@@ -269,6 +333,68 @@ export default function DashboardPage() {
                     </Card>
                 </div>
             </div>
+
+            {/* Recommended for You */}
+            <Card className="mb-8">
+                <CardHeader>
+                    <div className="flex justify-between items-center">
+                        <CardTitle className="flex items-center gap-2">
+                            <Sparkles className="h-5 w-5" />
+                            Recommended for You
+                        </CardTitle>
+                        <button
+                            onClick={() => router.push("/admin/all-books")}
+                            className="text-sm text-primary hover:underline"
+                        >
+                            Browse all
+                        </button>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {recommendedLoading ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {[...Array(6)].map((_, i) => (
+                                <Skeleton key={i} className="aspect-[2/3] rounded-lg" />
+                            ))}
+                        </div>
+                    ) : recommendedBooks && recommendedBooks.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {recommendedBooks.map((book) => (
+                                <div
+                                    key={book.id}
+                                    onClick={() => router.push(`/book/${book.id}?from=dashboard`)}
+                                    className="cursor-pointer group"
+                                >
+                                    <div className="aspect-[2/3] rounded-lg overflow-hidden bg-muted mb-2 group-hover:opacity-90 transition-opacity">
+                                        {book.cover_url ? (
+                                            <img
+                                                src={book.cover_url}
+                                                alt={book.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center">
+                                                <BookOpen className="h-12 w-12 text-muted-foreground" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <p className="text-sm font-medium truncate">{book.title}</p>
+                                    {book.authors && book.authors.length > 0 && (
+                                        <p className="text-xs text-muted-foreground truncate">
+                                            {book.authors[0]}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <Sparkles className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                            <p>No recommendations yet. Add books to your library to get personalized suggestions!</p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </AuthLayout>
     );
 }

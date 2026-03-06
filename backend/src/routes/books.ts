@@ -2,6 +2,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../db";
 import { bookSelect } from "../selects/book";
+import { getRecommendedBooks } from "../services/recommendations";
 import jwt from "jsonwebtoken";
 
 const router = Router();
@@ -44,6 +45,21 @@ router.get("/all", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch books" });
+  }
+});
+
+// GET /books/recommended - personalized book recommendations (requires auth)
+// Uses hybrid algorithm: item-based collaborative filtering → content-based → popularity
+router.get("/recommended", authenticateToken, async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const limit = Math.min(parseInt(req.query.limit as string) || 12, 24);
+
+  try {
+    const recommended = await getRecommendedBooks(userId, limit);
+    res.json(recommended);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch recommendations" });
   }
 });
 

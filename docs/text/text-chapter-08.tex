@@ -4,27 +4,46 @@
 
 % ============================================================================ %
 \section{Implementace a vyhodnocení doporučovacího systému}
-Text \dots
+V aplikaci Bookly byl implementován doporučovací systém pro knihy, který poskytuje personalizované návrhy na základě knih v knihovně uživatele. Systém je dostupný přes REST API endpoint \texttt{GET /api/books/recommended} a zobrazuje se na hlavní stránce dashboardu.
 
 
 \subsection{Návrh doporučovacího modelu}
-Text \dots
+Použit je \emph{hybridní přístup} kombinující tři strategie v pořadí priority:
+
+\begin{enumerate}
+  \item \textbf{Item-based collaborative filtering} (primární): Pro každou knihu v knihovně uživatele najdeme ostatní uživatele, kteří ji také mají („podobní uživatelé“). Doporučíme knihy, které tito uživatelé vlastní a které cílový uživatel ještě nemá. Skóre kandidátní knihy = počet podobných uživatelů, kteří ji mají (ko-ocenění).
+  \item \textbf{Content-based filtering} (doplněk): Knihy sdílející žánry (\texttt{genres}) nebo autory (\texttt{authors}) s knihami v knihovně uživatele. Využívá Prisma \texttt{hasSome}.
+  \item \textbf{Popularity-based} (poslední možnost): Nejnověji přidané knihy, pokud předchozí kroky nevrátí dostatek výsledků.
+\end{enumerate}
+
+Všechny tři strategie vylučují knihy již vlastněné uživatelem. Algoritmus nevyžaduje explicitní hodnocení ani externí ML služby.
 
 
 \subsection{Implementace algoritmu}
-Text \dots
+Algoritmus je implementován v backendu (Node.js/Express). Hlavní logika je v souboru \texttt{backend/src/services/recommendations.ts}, endpoint v \texttt{backend/src/routes/books.ts}. Zdrojový kód obsahuje podrobné komentáře u každého kroku. Endpoint \texttt{GET /api/books/recommended} vyžaduje JWT autentizaci. Postup:
+
+\begin{enumerate}
+  \item Načtení knih z knihovny uživatele včetně vztahu \texttt{addedByUsers}.
+  \item \textbf{Collaborative filtering}: Extrakce „podobných uživatelů“ (uživatelé sdílející alespoň jednu knihu, kromě sebe). Výběr kandidátních knih vlastněných podobnými uživateli. Řazení podle ko-ocenění (počet podobných uživatelů s danou knihou), poté podle data přidání.
+  \item \textbf{Content-based}: Pokud je doporučení méně než \texttt{limit}, doplnění knihami se shodnými žánry nebo autory. Parametr \texttt{limit} (výchozí 12, max 24) lze předat v query stringu.
+  \item \textbf{Popularity}: Pokud stále není dostatek výsledků, doplnění nejnovějšími knihami.
+\end{enumerate}
+
+Kód v \texttt{recommendations.ts} obsahuje podrobné komentáře vysvětlující jednotlivé kroky algoritmu.
+
+Frontend volá endpoint přes \texttt{fetchRecommendedBooks} v \texttt{lib/api.ts} a hook \texttt{useRecommendedBooks} v \texttt{hooks/useRecommendedBooks.ts}. Sekce „Recommended for You“ je zobrazena na dashboardu. Kód obsahuje komentáře popisující jednotlivé kroky algoritmu (načtení knihovny, podobní uživatelé, ko-ocenění, content-based a popularity fallback).
 
 
 \subsection{Testovací dataset}
-Text \dots
+Pro ověření lze použít existující data v databázi. \textbf{Collaborative filtering} vyžaduje, aby více uživatelů mělo překrývající se knihovny (sdílené knihy). \textbf{Content-based} doporučení závisí na vyplněných žánrech a autorech u knih. Pro smysluplné testování je vhodné mít knihy s vyplněnými poli \texttt{genres} a \texttt{authors} a několik uživatelů s částečně společnými knihami.
 
 
 \subsection{Vyhodnocení (Precision, Recall)}
-Text \dots
+Vyhodnocení precision a recall vyžaduje dataset s ground-truth preferencemi uživatelů (např. explicitní hodnocení nebo implicitní signály). V aktuální implementaci tyto metriky nejsou počítány; systém slouží primárně jako heuristický nástroj pro objevování knih. Pro budoucí vyhodnocení lze přidat logging interakcí (kliky, přidání do knihovny) a porovnat doporučené knihy s těmito signály.
 
 
 \subsection{Zhodnocení přínosu systému}
-Text \dots
+Doporučovací systém zvyšuje engagement uživatelů tím, že nabízí personalizované návrhy přímo na dashboardu. Uživatelé s vyplněnou knihovnou dostávají doporučení odpovídající jejich preferencím; noví uživatelé vidí populární knihy. Implementace je jednoduchá, škálovatelná a nevyžaduje externí služby.
 
 
 

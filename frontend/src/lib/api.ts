@@ -105,6 +105,25 @@ export async function createBook(data: CreateBookData, token: string) {
   return res.json();
 }
 
+export async function fetchRecommendedBooks(token: string, limit?: number): Promise<Book[]> {
+  const url = new URL(`${API_URL}/books/recommended`);
+  if (limit) url.searchParams.set("limit", String(limit));
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    let errorMessage = "Failed to fetch recommendations";
+    try {
+      const error = await res.json();
+      errorMessage = error.error || errorMessage;
+    } catch {
+      errorMessage = res.statusText || errorMessage;
+    }
+    throw new Error(errorMessage);
+  }
+  return res.json();
+}
+
 export async function fetchBookById(id: string): Promise<Book> {
   const res = await fetch(`${API_URL}/books/by-id/${id}`);
   
